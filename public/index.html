@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#08090d">
 <title>Neo AI</title>
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 <main class="app">
 <header class="topbar">
-<div class="brand"><div class="logo">N</div><div><h1>neo ai</h1><span id="status">connecting to ollama...</span></div></div>
+<div class="brand"><div class="logo">N</div><div><h1>neo ai</h1><span id="status">enter your ollama key</span></div></div>
 <div class="model-wrap"><label for="model">model</label><select id="model">
 <option>gpt-oss:20b-cloud</option>
 <option>gpt-oss:120b-cloud</option>
@@ -18,6 +18,7 @@
 <option>glm-4.7:cloud</option>
 </select></div>
 </header>
+<div class="keybar"><input id="api-key" type="password" placeholder="Ollama API key" autocomplete="off"><button id="save-key" type="button">save key</button><button id="clear-key" type="button">clear</button></div>
 <section id="chat" class="chat">
 <div id="empty" class="empty">
 <div class="empty-logo">N</div>
@@ -34,8 +35,8 @@
 <textarea id="input" rows="1" placeholder="message Neo..." autocomplete="off"></textarea>
 <button id="send" type="submit" aria-label="Send message">↑</button>
 </form>
-<footer>neo ai · ollama cloud</footer>
+<footer>neo ai · ollama cloud · frontend only</footer>
 </main>
-<script src="/config.js"></script>\n<script src="/app.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
