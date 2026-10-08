@@ -4,7 +4,12 @@ const input=document.querySelector("#input");
 const send=document.querySelector("#send");
 const model=document.querySelector("#model");
 const status=document.querySelector("#status");
+const apiBase=(window.NEO_API_URL||"").replace(/\/$/,"");
 const messages=[];
+
+function api(path){
+  return apiBase+path;
+}
 
 function addMessage(role,content=""){
   document.querySelector("#empty")?.remove();
@@ -26,13 +31,17 @@ function setBusy(busy){
 }
 
 async function checkHealth(){
+  if(!apiBase){
+    status.textContent="api not configured";
+    return;
+  }
   try{
-    const response=await fetch("/api/health");
+    const response=await fetch(api("/health"));
     const data=await response.json();
-    if(!response.ok||!data.ok) throw new Error();
-    status.textContent="ollama online · "+data.model;
+    if(!response.ok||!data.ok)throw new Error();
+    status.textContent="ollama cloud online · "+data.model;
   }catch{
-    status.textContent="ollama offline";
+    status.textContent="ollama cloud offline";
   }
 }
 
@@ -47,7 +56,7 @@ async function sendMessage(text){
   setBusy(true);
 
   try{
-    const response=await fetch("/api/chat",{
+    const response=await fetch(api("/chat"),{
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({model:model.value,messages})
@@ -55,7 +64,7 @@ async function sendMessage(text){
 
     if(!response.ok){
       const data=await response.json().catch(()=>({}));
-      throw new Error(data.error||"Neo could not reach Ollama.");
+      throw new Error(data.error||"Neo could not reach Ollama Cloud.");
     }
     if(!response.body)throw new Error("Streaming is not supported by this browser.");
 
