@@ -4,12 +4,13 @@ const input=document.querySelector("#input");
 const send=document.querySelector("#send");
 const model=document.querySelector("#model");
 const status=document.querySelector("#status");
-const apiBase=(window.NEO_API_URL||"").replace(/\/$/,"");
+const keyInput=document.querySelector("#api-key");
+const saveKey=document.querySelector("#save-key");
+const clearKey=document.querySelector("#clear-key");
 const messages=[];
-
-function api(path){
-  return apiBase+path;
-}
+const OLLAMA_URL="https://ollama.com/api";
+let apiKey=localStorage.getItem("neo_ollama_key")||"";
+keyInput.value=apiKey;
 
 function addMessage(role,content=""){
   document.querySelector("#empty")?.remove();
@@ -28,26 +29,36 @@ function setBusy(busy){
   send.disabled=busy;
   input.disabled=busy;
   model.disabled=busy;
+  saveKey.disabled=busy;
+  clearKey.disabled=busy;
 }
 
-async function checkHealth(){
-  if(!apiBase){
-    status.textContent="api not configured";
-    return;
-  }
-  try{
-    const response=await fetch(api("/health"));
-    const data=await response.json();
-    if(!response.ok||!data.ok)throw new Error();
-    status.textContent="ollama cloud online · "+data.model;
-  }catch{
-    status.textContent="ollama cloud offline";
+function saveApiKey(){
+  apiKey=keyInput.value.trim();
+  if(apiKey){
+    localStorage.setItem("neo_ollama_key",apiKey);
+    status.textContent="ollama cloud ready";
+  }else{
+    localStorage.removeItem("neo_ollama_key");
+    status.textContent="enter your ollama key";
   }
 }
+
+saveKey.addEventListener("click",saveApiKey);
+clearKey.addEventListener("click",()=>{
+  apiKey="";
+  keyInput.value="";
+  localStorage.removeItem("neo_ollama_key");
+  status.textContent="enter your ollama key";
+});
 
 async function sendMessage(text){
   const userText=text.trim();
   if(!userText)return;
+  if(!apiKey){
+    addMessage("assistant","add your Ollama API key above first.");
+    return;
+  }
 
   messages.push({role:"user",content:userText});
   addMessage("user",userText);
@@ -56,15 +67,23 @@ async function sendMessage(text){
   setBusy(true);
 
   try{
-    const response=await fetch(api("/chat"),{
+    const response=await fetch(OLLAMA_URL+"/chat",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:model.value,messages})
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+apiKey
+      },
+      body:JSON.stringify({
+        model:model.value,
+        messages,
+        stream:true,
+        options:{temperature:0.7}
+      })
     });
 
     if(!response.ok){
       const data=await response.json().catch(()=>({}));
-      throw new Error(data.error||"Neo could not reach Ollama Cloud.");
+      throw new Error(data.error||"Ollama Cloud request failed.");
     }
     if(!response.body)throw new Error("Streaming is not supported by this browser.");
 
@@ -84,7 +103,7 @@ async function sendMessage(text){
         if(!line.trim())continue;
         const chunk=JSON.parse(line);
         if(chunk.error)throw new Error(chunk.error);
-        answer+=chunk.message||"";
+        answer+=chunk.message?.content||"";
         bubble.textContent=answer;
         messages[messages.length-1].content=answer;
         chat.scrollTop=chat.scrollHeight;
@@ -127,4 +146,4 @@ document.querySelectorAll("[data-prompt]").forEach((button)=>{
   });
 });
 
-checkHealth();
+if(apiKey)status.textContent="ollama cloud ready";
