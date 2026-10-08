@@ -14,7 +14,7 @@ export default {
 
     if (url.pathname === "/health") {
       return Response.json(
-        { ok: true, provider: "ollama-cloud", model: env.NEO_MODEL || "gpt-oss:20b" },
+        { ok: true, provider: "ollama-cloud", model: env.NEO_MODEL || "gpt-oss:20b-cloud" },
         { headers: corsHeaders }
       );
     }
