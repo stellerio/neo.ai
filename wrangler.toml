@@ -1,0 +1,6 @@
+name = "neo-ai-api"
+main = "worker/index.js"
+compatibility_date = "2026-10-08"
+
+[vars]
+NEO_MODEL = "gpt-oss:20b"
