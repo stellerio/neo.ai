@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08090d">
+<title>Neo AI</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main class="app">
+<header class="topbar">
+<div class="brand"><div class="logo">N</div><div><h1>neo ai</h1><span id="status">connecting to ollama...</span></div></div>
+<div class="model-wrap"><label for="model">model</label><select id="model">
+<option>gpt-oss:20b-cloud</option>
+<option>gpt-oss:120b-cloud</option>
+<option>qwen3-coder:480b-cloud</option>
+<option>glm-4.7:cloud</option>
+</select></div>
+</header>
+<section id="chat" class="chat">
+<div id="empty" class="empty">
+<div class="empty-logo">N</div>
+<h2>what are you building?</h2>
+<p>ask Neo anything. code, ideas, debugging, explanations, or whatever you're working on.</p>
+<div class="suggestions">
+<button data-prompt="build me a simple HTML landing page with a dark futuristic design">build a website</button>
+<button data-prompt="explain this JavaScript error and show me how to fix it">debug code</button>
+<button data-prompt="give me 5 original project ideas I could build with JavaScript">project ideas</button>
+</div>
+</div>
+</section>
+<form id="composer" class="composer">
+<textarea id="input" rows="1" placeholder="message Neo..." autocomplete="off"></textarea>
+<button id="send" type="submit" aria-label="Send message">↑</button>
+</form>
+<footer>neo ai · ollama cloud</footer>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
